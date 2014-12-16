@@ -197,6 +197,7 @@ var start = function(port, options, replopt) {
     var stream = new SimpleStream();
     replopt = replopt || {};
     replopt.stream = stream;
+    var prompt = replopt.prompt ? replopt.prompt : ">";
     var rs = new repl.REPLServer(replopt);
     var replHttpServer = new ReplHttpServer(prompt, stream, rs, options);
     replHttpServer.start(port);
