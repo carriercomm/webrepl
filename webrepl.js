@@ -1,15 +1,15 @@
 // Copyright (c) 2011 Michael Mattozzi
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,7 +48,7 @@ ReplHttpServer.prototype.start = function(port) {
     if (this.username !== undefined && this.password !== undefined) {
         // Set up server that requires http digest authentication
         var httpdigest = require('./http-digest');
-        self.server = httpdigest.createServer(this.username, this.password, 
+        self.server = httpdigest.createServer(this.username, this.password,
             function(req, res) { self.route(req, res); });
         self.server.listen(port, this.hostname);
     } else {
@@ -111,7 +111,7 @@ ReplHttpServer.prototype.route = function(req, res) {
         }
     } else if ((match = req.url.match(/^\/complete\/(.*)/))) {
         if (match[1].length > 0) {
-            // This is written to accomodate both versions of the complete method 
+            // This is written to accomodate both versions of the complete method
             // in node.js. Older versions of node (0.4) return the completions from
             // the function. Newer versions (0.6+) take a callback to handle the
             // completions.
@@ -143,7 +143,7 @@ ReplHttpServer.prototype.route = function(req, res) {
         }
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end();
-    } else { 
+    } else {
         match = req.url.match(/\/(.*)/);
         if (match) {
             var file = match[1];
@@ -165,7 +165,7 @@ ReplHttpServer.prototype.serveFile = function(file, response) {
         }
         return "text/plain";
     }
-    
+
     fs.stat(file, function(err, stat) {
         if (err) {
             response.writeHead(404, {"Content-Type": "text/plain"});
@@ -193,10 +193,11 @@ ReplHttpServer.prototype.serveFile = function(file, response) {
  * @param {Object} options Set username, password, and hostname options
  * @return Return the REPLServer. Context can be set on this variable.
  */
-var start = function(port, options) {
+var start = function(port, options, replopt) {
     var stream = new SimpleStream();
-    var prompt = 'node> ';
-    var rs = new repl.REPLServer(prompt, stream);
+    replopt = replopt || {};
+    replopt.stream = stream;
+    var rs = new repl.REPLServer(replopt);
     var replHttpServer = new ReplHttpServer(prompt, stream, rs, options);
     replHttpServer.start(port);
     return rs;
